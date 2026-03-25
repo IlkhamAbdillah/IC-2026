@@ -290,7 +290,7 @@ export default function QuestionForm({
             value={currentQuestion.question_text}
             onChange={handleQuestionChange}
             placeholder="Enter question"
-            className={`w-full h-32 p-4 border rounded-lg font-mono bg-background text-foreground ${
+            className={`w-full h-32 p-4 border rounded-lg font-mono bg-accent/30 text-foreground ${
               errors.question_text ? "border-red-500" : "border-border"
             }`}
           />
@@ -309,10 +309,10 @@ export default function QuestionForm({
               name="question_type"
               value={currentQuestion.question_type}
               onChange={handleQuestionChange}
-              className="w-full p-2 border border-border rounded-lg bg-background text-foreground"
+              className="w-full p-2 border border-border rounded-lg bg-accent/30 text-foreground"
             >
-              <option value="multiple-choices">Multiple Choice</option>
-              <option value="short-answer">Short Answer</option>
+              <option value="multiple-choices" className="bg-background">Multiple Choice</option>
+              <option value="short-answer" className="bg-background">Short Answer</option>
             </select>
           </div>
 
@@ -326,7 +326,7 @@ export default function QuestionForm({
               type="number"
               value={currentQuestion.points || ""}
               onChange={handleQuestionChange}
-              className={`bg-background text-foreground ${
+              className={`bg-accent/30 text-foreground ${
                 errors.points ? "border-red-500" : "border-border"
               }`}
             />
@@ -373,7 +373,7 @@ export default function QuestionForm({
                   value={choice.choice_text}
                   onChange={(e) => handleChoiceChange(index, e)}
                   placeholder={`Choice ${index + 1}`}
-                  className="flex-1 bg-background text-foreground border-border"
+                  className="flex-1 bg-accent/30 text-foreground border-border"
                 />
                 <div className="flex space-x-2">
                   {/* New Save button for individual choice */}
@@ -466,7 +466,7 @@ export default function QuestionForm({
               value={correctionTable?.answer_text || ""}
               onChange={handleShortAnswerChange}
               placeholder="Enter answer"
-              className={`bg-background text-foreground ${
+              className={`bg-accent/30 text-foreground ${
                 errors.answer_text ? "border-red-500" : "border-border"
               }`}
             />
@@ -487,7 +487,7 @@ export default function QuestionForm({
                 value={currentQuestion.validation_pattern || ""}
                 onChange={handleQuestionChange}
                 placeholder="Enter regex pattern for validation (optional)"
-                className="bg-background text-foreground border-border font-mono"
+                className="bg-accent/30 text-foreground border-border font-mono"
               />
               <p className="text-xs text-muted-foreground">
                 Example: ^[0-9]+$ for numbers only, ^[a-zA-Z]+$ for letters only
@@ -535,7 +535,7 @@ export default function QuestionForm({
             type="button"
             onClick={saveAndAddAnother}
             disabled={isSubmitting}
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="flex-1 bg-primary hover:bg-primary/50 text-white font-medium transition-colors"
           >
             {isSubmitting ? (
               <>

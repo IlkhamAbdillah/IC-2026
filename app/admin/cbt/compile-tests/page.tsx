@@ -188,21 +188,21 @@ export default function DashboardPage() {
 
   if (isPageLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-secondary/20 to-background/95">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-secondary/20 to-background/95">
       <div className="max-w-[90%] mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold tracking-tight">
               Test on-demand Compiler
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Compile test questions to MDX format
             </p>
           </div>
@@ -214,40 +214,40 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="bg-card rounded-xl shadow-lg overflow-hidden mb-8">
           <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold tracking-tight">
               Available Tests
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Select a test to compile its questions to MDX
             </p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-card">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Test Name
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card">
                 {testsData?.map((test) => (
-                  <tr key={test.id} className="hover:bg-gray-50">
+                  <tr key={test.id} className="hover:bg-muted">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium tracking-tight">
                         {test.title}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleTestCompile(test.id)}
-                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                        className="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary/50 transition-colors disabled:bg-gray-600"
                         disabled={compilingTestId !== null}
                       >
                         {compilingTestId === test.id
@@ -262,12 +262,12 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-card rounded-xl shadow-lg overflow-hidden mb-8">
           <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold tracking-tight">
               User Permissions
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Elevate a user to admin privileges
             </p>
           </div>
@@ -277,7 +277,7 @@ export default function DashboardPage() {
               <select
                 onChange={(e) => setSelectedEmail(e.target.value)}
                 value={selectedEmail}
-                className="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="flex-grow p-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary/50"
                 disabled={isActionLoading}
               >
                 <option value="">Select an email</option>
@@ -290,7 +290,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => handleElevateUser(selectedEmail)}
                 disabled={!selectedEmail || isActionLoading}
-                className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary/50 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed disabled:text-gray-400"
               >
                 {isActionLoading ? "Processing..." : "Elevate User"}
               </button>

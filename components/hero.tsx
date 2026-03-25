@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <div className="min-h-screen w-full flex flex-col gap-16 items-center justify-between relative overflow-hidden bg-gradient-to-b from-[#261f31] via-[#422840] to-[#673955]">
+    <div className="min-h-screen w-full flex flex-col gap-16 items-center justify-between relative overflow-hidden bg-gradient-to-b from-[#141c3a] via-[#1d2b55] to-[#253675]">
       {/* Animated particles or shapes */}
       <div className="absolute inset-0 z-0">
         {[...Array(20)].map((_, i) => (

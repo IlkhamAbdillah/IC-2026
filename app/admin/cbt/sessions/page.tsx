@@ -147,7 +147,7 @@ export default function ForceSubmitPage() {
       const results = await Promise.all(
         sessionIds.map(async (sessionId) => {
           const { data, error } = await supabase.rpc("manual_force_submit", {
-            session_id: sessionId,
+            p_session_id: sessionId,
           });
 
           return { sessionId, success: !error, error };
@@ -241,7 +241,7 @@ export default function ForceSubmitPage() {
             {/* Search and filter */}
             <div className="p-6 border-b border-border/20">
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex items-center bg-muted rounded-lg px-3 py-2 flex-1">
+                <div className="flex items-center bg-accent/30 rounded-lg px-3 py-2 flex-1">
                   <SearchIcon className="h-5 w-5 text-muted-foreground mr-2" />
                   <input
                     type="text"
@@ -252,7 +252,7 @@ export default function ForceSubmitPage() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="flex items-center bg-muted rounded-lg px-3 py-2 cursor-pointer">
+                  <label className="flex items-center bg-accent/30 rounded-lg px-3 py-2 cursor-pointer">
                     <input
                       type="checkbox"
                       className="mr-2 accent-primary"
@@ -263,7 +263,7 @@ export default function ForceSubmitPage() {
                   </label>
                   <button
                     onClick={fetchSessions}
-                    className="bg-muted rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-muted/80 transition-colors"
+                    className="bg-accent/30 rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-muted/80 transition-colors"
                   >
                     <RefreshCw className="h-5 w-5 text-muted-foreground" />
                     <span className="hidden sm:inline">Refresh</span>

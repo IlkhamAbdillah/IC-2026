@@ -60,28 +60,10 @@ export const signInAction = async (formData: FormData) => {
   }
   
   const isPasswordValid = verifyPassword(password, memberData.salt!, memberData.hashed_password!);
-
-  const finditDB = await fetch(
-    `https://rtk.find-it.id/fetch-hash-salt?email=${email}`,
-  );
-
-  const finditDBResponse = await finditDB.json();
   
   if (!isPasswordValid) {
-    try {
-      const isPasswordValidFindit = verifyPassword(
-        password,
-        finditDBResponse.salt,
-        finditDBResponse.passwordHash,
-      );
-      if (!isPasswordValidFindit) {
-        console.error("Invalid password for email:", email);
-        return encodedRedirect("error", "/sign-in", "Invalid password");
-      }
-    } catch (error) {
-      console.error("Error verifying password:", error);
-      return encodedRedirect("error", "/sign-in", "Invalid password");
-    }
+    console.error("Invalid password for email:", email);
+    return encodedRedirect("error", "/sign-in", "Invalid password");
   }
 
   // After verification against our database, handle Supabase auth

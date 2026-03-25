@@ -638,8 +638,14 @@ export default function SessionAnswersPage(props: {
                         </div>
                         <div className="mt-1 text-sm text-muted-foreground">
                           Type: {item.question?.question_type || "Unknown"} |
-                          Points: {item.question?.points || 0} | Points Earned:{" "}
-                          {item.isCorrect ? item.question?.points : 0}
+                          Points: {item.question?.points || 0} | 
+                          Points Earned: {
+                            !item.answer.choice_id && !item.answer.answer_text
+                              ? 0
+                              : item.isCorrect
+                                ? Number(item.question?.points || 0)
+                                : -Number(item.question?.minus || 0)
+                          }
                         </div>
                       </div>
                       <div className="p-4 border-t border-border/20">

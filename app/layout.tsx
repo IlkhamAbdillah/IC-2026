@@ -14,8 +14,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "runsha CBT System",
-  description: "Laman ujian daring runsha CBT System",
+  title: "IC CBT System",
+  description: "Laman ujian daring IC CBT System",
 };
 
 const geistSans = Geist({
@@ -37,7 +37,7 @@ export default function RootLayout({
           integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
           crossOrigin="anonymous"
         />
-        <link rel="icon" type="image/svg+xml" href="/ICLogo.svg" />
+        <link rel="icon" type="image/svg+xml" href="/ICLogo.svg?v=2" />
       </head>
       <body className="bg-background text-foreground">
         <ThemeProvider
@@ -51,7 +51,7 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-[80%] flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>runsha CBT System</Link>
+                    <Link href={"/"}>IC FIND IT 2026</Link>
                     <div className="flex items-center gap-2">
                       {/* <DeployButton /> */}
                     </div>

@@ -656,7 +656,7 @@ export default function CreateTest() {
             <Button
               variant="default"
               onClick={handleSaveTestInfo}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full bg-primary hover:bg-primary/50 text-primary-foreground"
             >
               Save Test Information
             </Button>
@@ -781,7 +781,7 @@ export default function CreateTest() {
               </Button>
               <Button
                 onClick={addQuestion}
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="flex-1 bg-primary hover:bg-primary/50 text-primary-foreground"
               >
                 Save and Add Another Question
               </Button>

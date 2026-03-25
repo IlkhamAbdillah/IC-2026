@@ -62,7 +62,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              className="bg-background/90 border-input focus:border-primary focus:ring-1 focus:ring-primary/50"
+              className="bg-custom border-input focus:border-primary focus:ring-1 focus:ring-primary/50"
             />
           </div>
 
@@ -155,7 +155,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
             <div className="flex justify-end">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/50 transition-colors"
               >
                 I understand
               </button>

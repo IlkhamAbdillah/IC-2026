@@ -690,7 +690,7 @@
 //                     : state.answers[state.questions[index].id]
 //                       ? "bg-accent/20 text-foreground border-accent/40"
 //                       : "bg-background border-border/50 text-foreground/80"
-//                 } hover:bg-primary/90 hover:text-primary-foreground transition-all duration-200`}
+//                 } hover:bg-primary/50 hover:text-primary-foreground transition-all duration-200`}
 //                 onClick={() => handleQuestionChange(index)}
 //               >
 //                 {isQuestionFlagged(state.questions[index].id) && (
@@ -827,7 +827,7 @@
 //                       className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-medium ${
 //                         state.shortAnswerSaved
 //                           ? "bg-green-600 text-white hover:bg-green-700"
-//                           : "bg-primary text-primary-foreground hover:bg-primary/90"
+//                           : "bg-primary text-primary-foreground hover:bg-primary/50"
 //                       }`}
 //                       disabled={
 //                         !state.answers[

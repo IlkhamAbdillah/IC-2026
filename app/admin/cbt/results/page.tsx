@@ -182,7 +182,7 @@ export default function TestResultsPage() {
           <div className="w-full bg-card rounded-xl shadow-md border border-border/30 overflow-hidden">
             {/* Search and filter */}
             <div className="p-6 border-b border-border/20">
-              <div className="flex items-center bg-muted rounded-lg px-3 py-2">
+              <div className="flex items-center bg-accent/30 rounded-lg px-3 py-2">
                 <SearchIcon className="h-5 w-5 text-muted-foreground mr-2" />
                 <input
                   type="text"

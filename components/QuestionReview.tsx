@@ -141,7 +141,7 @@ export default function QuestionsReview({
                     : question.question_text}
                 </h4>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500">
                     {question.question_type}
                   </span>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
@@ -223,7 +223,7 @@ export default function QuestionsReview({
                     {previewQuestion.points === 1 ? "point" : "points"}
                   </span>
                 </div>
-                <div className="p-6 border border-border/50 rounded-lg bg-card/50 shadow-sm">
+                <div className="p-6 border markdown-body border-border/50 rounded-lg bg-custom shadow-sm">
                   {previewQuestion.question_mdx ? (
                     <MDXContent code={previewQuestion.question_mdx} />
                   ) : (

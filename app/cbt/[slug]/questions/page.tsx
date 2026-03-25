@@ -292,18 +292,18 @@ export default function TestPage() {
       router.push("/cbt");
     }
     if (session.status === "finished") {
-      // const { data: scores } = await supabase
-      //   .from("scores")
-      //   .select("*")
-      //   .eq("id", `${teams?.id}-${test?.id}-${session.id}`)
-      //   .single<Tables<"scores">>();
+      const { data: scores } = await supabase
+        .from("scores")
+        .select("*")
+        .eq("id", `${teams?.id}-${test?.id}-${session.id}`)
+        .single<Tables<"scores">>();
 
-      // if (scores) {
-      //   router.push("/cbt");
-      // } else {
-      //   await calculateScore(session.id, teams!.id, test!.id);
-      //   router.push("/cbt");
-      // }
+      if (scores) {
+        router.push("/cbt");
+      } else {
+        await calculateScore(session.id, teams!.id, test!.id);
+        router.push("/cbt");
+      }
       router.push("/cbt");
       return;
     }
@@ -586,7 +586,7 @@ export default function TestPage() {
       console.error(error);
     }
 
-    // await calculateScore(testSession.id, teams!.id, test!.id);
+    await calculateScore(testSession.id, teams!.id, test!.id);
 
     router.push(`/cbt`);
   };
@@ -623,7 +623,7 @@ export default function TestPage() {
         {/* Main Content with Sidebar Layout */}
         <div className="flex flex-col md:flex-row">
           {/* Question Navigation - Left Sidebar */}
-          <div className="w-full md:w-[20%] bg-background/95 p-4 border-r border-border/30">
+          <div className="w-full md:w-[20%] bg-background/90 p-4 border-r border-border/30">
             <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {questions.map((_, index) => (
                 <button
@@ -634,7 +634,7 @@ export default function TestPage() {
                       : answers[questions[index].id]
                         ? "bg-accent/20 text-foreground border-accent/40"
                         : "bg-background border-border/50 text-foreground/80"
-                  } hover:bg-primary/90 hover:text-primary-foreground transition-all duration-200`}
+                  } hover:bg-primary/50 hover:text-primary-foreground transition-all duration-200`}
                   onClick={() => handleQuestionChange(index)}
                 >
                   {flags.find(
@@ -692,7 +692,7 @@ export default function TestPage() {
             </div>
 
             <div
-              className="max-w-none mb-8 markdown-body text-foreground bg-card/50 p-6 rounded-lg border border-border/30 shadow-sm"
+              className="max-w-none mb-8 markdown-body text-foreground bg-custom p-6 rounded-lg border border-border shadow-sm"
               data-theme={theme}
               style={{ colorScheme: theme }}
             >
@@ -706,7 +706,7 @@ export default function TestPage() {
             {/* Answer Options */}
             <div className="space-y-3 mt-6">
               {questions[currentQuestion].question_type === "short-answer" ? (
-                <div className="bg-card/50 p-3 rounded-lg border border-border/30">
+                <div className="bg-card/50 p-3 rounded-lg border border-border">
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -729,7 +729,7 @@ export default function TestPage() {
                           [questions[currentQuestion].id]: value,
                         }));
                       }}
-                      className={`w-full p-3 bg-background/80 border ${
+                      className={`w-full p-3 bg-custom border ${
                         shortAnswerValidationError
                           ? "border-red-500 focus:ring-red-500"
                           : "border-input focus:ring-primary/50 focus:border-primary"
@@ -756,7 +756,7 @@ export default function TestPage() {
                       className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-medium ${
                         shortAnswerSaved
                           ? "bg-green-600 text-white hover:bg-green-700"
-                          : "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "bg-primary text-primary-foreground hover:bg-primary/50"
                       }`}
                     >
                       {shortAnswerSaved ? "Saved" : "Save"}
@@ -792,7 +792,7 @@ export default function TestPage() {
                         onClick={() =>
                           handleDeleteAnswer(questions[currentQuestion].id)
                         }
-                        className="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all flex items-center gap-1 text-sm font-medium"
+                        className="px-3 py-1 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-all flex items-center gap-1 text-sm font-medium"
                       >
                         Clear Selection
                         <X className="h-3 w-3" />

@@ -27,6 +27,22 @@ interface LeaderboardEntry {
   rank: number;
 }
 
+function normalizeScore(scores: any) {
+  if (!scores) return null;
+
+  if (Array.isArray(scores)) {
+    return scores
+      .filter(s => s.created_at)
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() -
+          new Date(a.created_at).getTime()
+      )[0] ?? null;
+  }
+
+  return scores;
+}
+
 export default function TestLeaderboardPage(props: {
   params: Promise<{ slug: string }>;
 }) {
@@ -101,28 +117,32 @@ export default function TestLeaderboardPage(props: {
   // Generate the leaderboard data
   const generateLeaderboard = (sessionData: TestSession[]) => {
     const leaderboardData: LeaderboardEntry[] = sessionData
-      .filter(
-        (session) =>
-          session.team &&
-          session.scores &&
-          session.scores.length > 0 &&
-          session.scores[0].score !== null &&
-          session.created_at &&
-          session.scores[0].created_at
-      )
       .map((session) => {
-        const startTime = new Date(session.created_at!).getTime();
-        const finishTime = new Date(session.scores![0].created_at).getTime();
-        const completionTime = (finishTime - startTime) / 1000; // in seconds
+        const scoreData = normalizeScore(session.scores);
+
+        if (
+          !session.team ||
+          !scoreData ||
+          scoreData.score === null ||
+          !session.created_at ||
+          !scoreData.created_at
+        ) {
+          return null;
+        }
+
+        const startTime = new Date(session.created_at).getTime();
+        const finishTime = new Date(scoreData.created_at).getTime();
+        const completionTime = (finishTime - startTime) / 1000;
 
         return {
           teamId: session.team_id,
           teamName: session.team?.name || "Unknown Team",
-          score: session.scores![0].score as number,
+          score: scoreData.score as number,
           completionTime,
-          rank: 0, // Placeholder, will be set after sorting
+          rank: 0,
         };
-      });
+      })
+      .filter((x): x is LeaderboardEntry => x !== null);
 
     // Sort the leaderboard: primary by score (desc), secondary by completion time (asc)
     const sortedData = [...leaderboardData].sort((a, b) => {

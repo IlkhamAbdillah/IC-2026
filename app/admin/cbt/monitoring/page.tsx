@@ -321,7 +321,7 @@ export default function CBTMonitoringPage() {
             <div className="p-6 border-b border-border/20">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex items-center bg-muted rounded-lg px-3 py-2 flex-1">
+                  <div className="flex items-center bg-accent/30 rounded-lg px-3 py-2 flex-1">
                     <SearchIcon className="h-5 w-5 text-muted-foreground mr-2" />
                     <input
                       type="text"
@@ -333,7 +333,7 @@ export default function CBTMonitoringPage() {
                   </div>
                   <button
                     onClick={handleRefresh}
-                    className="bg-muted rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-muted/80 transition-colors"
+                    className="bg-accent/30 rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-muted/80 transition-colors"
                   >
                     <RefreshCw className="h-5 w-5 text-muted-foreground" />
                     <span className="hidden sm:inline">Refresh</span>
@@ -349,15 +349,15 @@ export default function CBTMonitoringPage() {
                     </label>
                     <div className="relative">
                       <select
-                        className="bg-muted rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
+                        className="bg-accent/30 rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
                         value={groupBy}
                         onChange={(e) =>
                           setGroupBy(e.target.value as "none" | "team" | "test")
                         }
                       >
-                        <option value="none">No Grouping</option>
-                        <option value="team">Group by Team</option>
-                        <option value="test">Group by Test</option>
+                        <option value="none" className="bg-background">No Grouping</option>
+                        <option value="team" className="bg-background">Group by Team</option>
+                        <option value="test" className="bg-background">Group by Test</option>
                       </select>
                       <Layers className="h-4 w-4 text-muted-foreground absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
                     </div>
@@ -370,7 +370,7 @@ export default function CBTMonitoringPage() {
                     </label>
                     <div className="relative">
                       <select
-                        className="bg-muted rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
+                        className="bg-accent/30 rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
                         value={filterCategory || ""}
                         onChange={(e) =>
                           setFilterCategory(
@@ -378,9 +378,9 @@ export default function CBTMonitoringPage() {
                           )
                         }
                       >
-                        <option value="">All Categories</option>
+                        <option value="" className="bg-background">All Categories</option>
                         {categories.map((category) => (
-                          <option key={category} value={category}>
+                          <option key={category} value={category} className="bg-background">
                             {category}
                           </option>
                         ))}
@@ -396,7 +396,7 @@ export default function CBTMonitoringPage() {
                     </label>
                     <div className="relative">
                       <select
-                        className="bg-muted rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
+                        className="bg-accent/30 rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
                         value={filterTeamId || ""}
                         onChange={(e) =>
                           setFilterTeamId(
@@ -406,9 +406,9 @@ export default function CBTMonitoringPage() {
                           )
                         }
                       >
-                        <option value="">All Teams</option>
+                        <option value="" className="bg-background">All Teams</option>
                         {teams.map((team) => (
-                          <option key={team.id} value={team.id}>
+                          <option key={team.id} value={team.id} className="bg-background">
                             {team.name}
                           </option>
                         ))}
@@ -424,7 +424,7 @@ export default function CBTMonitoringPage() {
                     </label>
                     <div className="relative">
                       <select
-                        className="bg-muted rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
+                        className="bg-accent/30 rounded-lg px-3 py-2 pr-8 appearance-none cursor-pointer border border-border/20 w-full"
                         value={filterTestId || ""}
                         onChange={(e) =>
                           setFilterTestId(
@@ -434,9 +434,9 @@ export default function CBTMonitoringPage() {
                           )
                         }
                       >
-                        <option value="">All Tests</option>
+                        <option value="" className="bg-background">All Tests</option>
                         {tests.map((test) => (
-                          <option key={test.id} value={test.id}>
+                          <option key={test.id} value={test.id} className="bg-background">
                             {test.title}
                           </option>
                         ))}

@@ -105,22 +105,25 @@ export async function calculateScore(testSessionId: string, teamId: string, test
         if (correctAnswer) {
             score += question!.points!;
         }
+        else{
+            score -= question!.minus!;
+        }
     }
 
-    // await supabase
-    //     .from("scores")
-    //     .upsert(
-    //         {
-    //             id: `${teamId}-${testId}-${testSessionId}`,
-    //             team_id: teamId,
-    //             test_id: testId,
-    //             session_id: testSessionId,
-    //             score,
-    //         },
-    //         {
-    //             onConflict: 'id',
-    //             ignoreDuplicates: false
-    //         }
-    //     );
+    await supabase
+        .from("scores")
+        .upsert(
+            {
+                id: `${teamId}-${testId}-${testSessionId}`,
+                team_id: teamId,
+                test_id: testId,
+                session_id: testSessionId,
+                score,
+            },
+            {
+                onConflict: 'id',
+                ignoreDuplicates: false
+            }
+        );
     return score;
 }

@@ -90,7 +90,7 @@ const StyleGuide = () => {
             <div className="space-y-4">
               <h3 className="text-xl font-medium">Buttons</h3>
               <div className="flex flex-wrap gap-4">
-                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/50">
                   Primary
                 </button>
                 <button className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80">

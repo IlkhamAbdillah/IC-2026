@@ -7,8 +7,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "runsha CBT System",
-  description: "Laman ujian daring runsha CBT System",
+  title: "IC CBT System",
+  description: "Laman ujian daring IC CBT System",
 };
 
 export default function RootLayout({

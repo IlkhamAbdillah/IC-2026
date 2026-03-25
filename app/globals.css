@@ -32,32 +32,53 @@
   }
 
   .dark {
-    --background: 275 25% 14%; /* #1e1b2d - dark purple background */
-    --foreground: 300 5% 93%; /* #eeebed - light text */
-    --card: 276 22% 13%; /* #1d182c - darker purple card */
-    --card-foreground: 300 5% 93%; /* #eeebed - light text */
-    --popover: 275 25% 14%; /* #1e1b2d - dark purple popover */
-    --popover-foreground: 300 5% 93%; /* #eeebed - light text */
-    --primary: 270 33% 52%; /* #8264a6 - medium purple primary */
-    --primary-foreground: 0 0% 98%; /* very light text on primary */
-    --secondary: 335 37% 31%; /* #422840 - dark red/purple secondary */
-    --secondary-foreground: 0 0% 98%; /* very light text on secondary */
-    --muted: 276 22% 13%; /* #1d182c - darker purple muted */
-    --muted-foreground: 270 14% 42%; /* #645474 - medium purple muted text */
-    --accent: 330 52% 63%; /* #c9799c - pink accent */
-    --accent-foreground: 0 0% 98%; /* very light text on accent */
-    --destructive: 343 35% 28%; /* #673955 - wine red destructive */
-    --destructive-foreground: 0 0% 98%; /* very light text on destructive */
-    --border: 270 16% 27%; /* #483a51 - muted purple border */
-    --input: 270 16% 27%; /* #483a51 - muted purple input */
-    --ring: 270 33% 52%; /* #8264a6 - medium purple ring */
+    /* Background tetap di #14275c */
+    --background: 224 64% 22%; 
+    --foreground: 210 40% 98%; 
+    
+    /* Card: Saya buat sedikit lebih pekat agar teks terang lebih kontras */
+    --card: 229 48% 22%; /* #1d2b55 */
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 224 64% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    /* --- TOMBOL UTAMA (Go to Admin & Start Test) --- */
+    /* Menggunakan Biru Cyan Terang agar sangat kontras dengan background Navy */
+    --primary: 199 89% 48%;
+    --primary-foreground: 210 40% 98%; /* Teks terang agar kontras dengan tombol hijau */
+
+    /* --- TOMBOL KEDUA / SECONDARY (#2c42ad) --- */
+    --secondary: 229 59% 55%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* --- PERBAIKAN TEKS DESKRIPSI & MUTED --- */
+    /* Ini yang membuat teks "Soal Soal Warm Up" kamu jadi terang dan terbaca */
+    --muted: 224 64% 20%;
+    --muted-foreground: 210 20% 50%; /* Abu-abu terang mendekati putih */
+
+    --accent: 229 59% 53%;
+    --accent-foreground: 210 40% 98%;
+
+    /* --- BORDER SILVER --- */
+    --border: 0 0% 45%; /* #737373 - Silver gelap / Dark Gray */
+    --input: 0 0% 45%; /* Border input dibuat sedikit lebih biru agar senada */
+    --ring: 191 91% 65%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --custom: 226 44% 30%;
+
     --chart-1: 270 33% 52%; /* #8264a6 */
     --chart-2: 330 52% 63%; /* #c9799c */
     --chart-3: 329 83% 70%; /* #f175a1 */
     --chart-4: 343 35% 28%; /* #673955 */
-    --chart-5: 270 14% 42%; /* #645474 */
+    --chart-5: 226 44% 30%; /* #645474 */
   }
 }
+
+  
 
 @layer base {
   * {

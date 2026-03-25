@@ -63,11 +63,11 @@ export default function TestInfoForm({
             name="available_tests"
             onChange={(e) => onSelectTest(Number(e.target.value))}
             disabled={isLoading}
-            className="w-full p-2 border border-border rounded-lg bg-background text-foreground"
+            className="w-full p-2 border border-border rounded-lg bg-accent/30 text-foreground"
           >
-            <option value="">Select a test</option>
+            <option value="" className="bg-background">Select a test</option>
             {availableTests.map((test) => (
-              <option key={test.id} value={test.id}>
+              <option key={test.id} value={test.id} className="bg-background">
                 {test.title}
               </option>
             ))}
@@ -84,7 +84,7 @@ export default function TestInfoForm({
             value={testData.title}
             onChange={handleChange}
             placeholder="Enter test title"
-            className={`bg-background text-foreground border-border ${
+            className={`bg-accent/30 text-foreground border-border ${
               errors.title ? "border-red-500" : ""
             }`}
           />
@@ -103,7 +103,7 @@ export default function TestInfoForm({
             value={testData.description || ""}
             onChange={handleChange}
             placeholder="Enter test description"
-            className="w-full h-32 p-4 border border-border rounded-lg font-mono bg-background text-foreground"
+            className="w-full h-32 p-4 border border-border rounded-lg font-mono bg-accent/30 text-foreground"
           />
         </div>
 
@@ -118,7 +118,7 @@ export default function TestInfoForm({
               type="number"
               value={testData.duration || ""}
               onChange={handleChange}
-              className={`bg-background text-foreground border-border ${
+              className={`bg-accent/30 text-foreground border-border ${
                 errors.duration ? "border-red-500" : ""
               }`}
             />
@@ -137,7 +137,7 @@ export default function TestInfoForm({
               type="datetime-local"
               value={testData.start_time || ""}
               onChange={handleChange}
-              className="bg-background text-foreground border-border"
+              className="bg-accent/30 text-foreground border-border"
             />
           </div>
 
@@ -151,7 +151,7 @@ export default function TestInfoForm({
               value={testData.instructions || ""}
               onChange={handleChange}
               placeholder="Enter test instructions"
-              className="w-full h-32 p-4 border border-border rounded-lg font-mono bg-background text-foreground"
+              className="w-full h-32 p-4 border border-border rounded-lg font-mono bg-accent/30 text-foreground"
             />
           </div>
 
@@ -173,7 +173,7 @@ export default function TestInfoForm({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="w-full bg-primary hover:bg-primary/50 text-primary-foreground"
         >
           {isSubmitting ? (
             <>

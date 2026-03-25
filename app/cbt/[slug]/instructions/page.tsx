@@ -160,7 +160,7 @@ export default function InstructionPage() {
 
           <div className="p-6 sm:p-8 space-y-8">
             {/* Test Overview Card */}
-            <div className="bg-card/50 p-6 rounded-lg border border-border/30 shadow-sm">
+            <div className="bg-custom p-6 rounded-lg border border-border/30 shadow-sm">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="space-y-1">
                   <h3 className="font-bold text-lg text-foreground">
@@ -233,7 +233,7 @@ export default function InstructionPage() {
 
             {/* Instructions Content */}
             <div className="prose prose-gray max-w-none">
-              <div className="bg-card/50 rounded-lg p-6 border border-border/30 shadow-sm markdown-body text-justify">
+              <div className="bg-custom rounded-lg p-6 border border-border/30 shadow-sm markdown-body text-justify">
                 <MDXContent code={compiledCode} />
               </div>
             </div>

@@ -19,6 +19,20 @@ interface TestSession extends Tables<"test_sessions"> {
   scores: Tables<"scores">[] | null;
 }
 
+function getScore(scores: any): number | null {
+  if (!scores) return null;
+  return Array.isArray(scores)
+    ? scores[0]?.score ?? null
+    : scores.score ?? null;
+}
+
+function getSubmitTime(scores: any): string | null {
+  if (!scores) return null;
+  return Array.isArray(scores)
+    ? scores[0]?.created_at ?? null
+    : scores.created_at ?? null;
+}
+
 export default function TestResultDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
@@ -369,9 +383,9 @@ export default function TestResultDetailPage(props: {
                   const csvRows = [headers];
 
                   filteredSessions.forEach((session) => {
-                    const score = session.scores && session.scores[0]?.score;
+                    const score = getScore(session.scores);
                     const submitTime =
-                      session.scores && session.scores[0]?.created_at;
+                      getSubmitTime(session.scores);
                     const status =
                       session.status === "finished"
                         ? "Completed"
@@ -507,9 +521,9 @@ export default function TestResultDetailPage(props: {
                     </tr>
                   ) : (
                     filteredSessions.map((session) => {
-                      const score = session.scores && session.scores[0]?.score;
+                      const score = getScore(session.scores);
                       const submitTime =
-                        session.scores && session.scores[0]?.created_at;
+                        getSubmitTime(session.scores);
 
                       // Calculate completion time
                       let completionTime = "N/A";
