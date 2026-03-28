@@ -242,8 +242,16 @@ export default function TestPage() {
 
         setQuestions(shuffledQuestions);
 
-        const endTime = new Date(testData.end_time!).getTime();
-        setTimeRemaining(Math.floor((endTime - Date.now()) / 1000));
+        // 1. Ambil durasi dari data test (asumsi dalam menit, ubah ke milidetik)
+        const testDurationMs = testData.duration! * 60 * 1000; 
+        const sessionStartTime = new Date(Date.now()).getTime();
+        const durationDeadline = sessionStartTime + testDurationMs;
+        const absoluteDeadline = new Date(testData.end_time!).getTime();
+        const actualDeadline = Math.min(durationDeadline, absoluteDeadline);
+        const remainingSeconds = Math.floor((actualDeadline - Date.now()) / 1000);
+
+        setTimeRemaining(remainingSeconds > 0 ? remainingSeconds : 0);
+        // setTimeRemaining(Math.floor((endTime - Date.now()) / 1000));
 
         const timer = setInterval(() => {
           setTimeRemaining((prev) => {
