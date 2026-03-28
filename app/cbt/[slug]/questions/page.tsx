@@ -244,7 +244,7 @@ export default function TestPage() {
 
         // 1. Ambil durasi dari data test (asumsi dalam menit, ubah ke milidetik)
         const testDurationMs = testData.duration! * 60 * 1000; 
-        const sessionStartTime = new Date(Date.now()).getTime();
+        const sessionStartTime = new Date(session.start_time!).getTime();
         const durationDeadline = sessionStartTime + testDurationMs;
         const absoluteDeadline = new Date(testData.end_time!).getTime();
         const actualDeadline = Math.min(durationDeadline, absoluteDeadline);
