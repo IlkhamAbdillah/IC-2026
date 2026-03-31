@@ -20,21 +20,6 @@ export default function CbtPage() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    async function checkAdmin() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const role = user?.user_metadata?.role;
-        setIsAdmin(role === "Admin");
-      }
-    }
-
-    checkAdmin();
-  }, [supabase]);
-
-  useEffect(() => {
     async function fetchData() {
       const {
         data: { user },
@@ -44,40 +29,31 @@ export default function CbtPage() {
         return router.push("/sign-in");
       }
 
-      const { data: testsData, error: testsError } = await supabase
-        .from("tests")
-        .select("*")
-        .returns<Tables<"tests">[]>();
+      const role = user?.user_metadata?.role;
+      setIsAdmin(role === "Admin");
 
-      if (testsError) {
-        console.error(testsError);
+      const [testsResult, teamsResult] = await Promise.all([
+        supabase.from("tests").select("*").returns<Tables<"tests">[]>(),
+        supabase.from("members").select("teams(*)").eq("email", user.email).single(),
+      ]);
+
+      if (testsResult.error) {
+        console.error(testsResult.error);
         return;
       }
 
-      setTestsData(testsData);
+      setTestsData(testsResult.data);
 
-      const { data: teams } = await supabase
-        .from("members")
-        .select("teams(*)")
-        .eq("email", user.email)
-        .single();
-
-      const team = teams?.teams as unknown as Tables<"teams">;
+      const team = teamsResult.data?.teams as unknown as Tables<"teams">;
       setTeams(team);
 
-      const { data: teamSessions } = await supabase
-        .from("test_sessions")
-        .select("*")
-        .eq("team_id", team.id);
+      const [sessionsResult, finishesResult] = await Promise.all([
+        supabase.from("test_sessions").select("*").eq("team_id", team.id),
+        supabase.from("finishes").select("*").filter("session_id", "like", `${team.id}-%`),
+      ]);
 
-      setTeamSessions(teamSessions as Tables<"test_sessions">[]);
-
-      const { data: finishedTests } = await supabase
-        .from("finishes")
-        .select("*")
-        .filter("session_id", "ilike", `${team.id}-%`);
-
-      setFinishedTests(finishedTests as Tables<"finishes">[]);
+      setTeamSessions(sessionsResult.data as Tables<"test_sessions">[]);
+      setFinishedTests(finishesResult.data as Tables<"finishes">[]);
     }
 
     fetchData();
