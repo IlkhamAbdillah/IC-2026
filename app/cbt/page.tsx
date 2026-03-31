@@ -44,10 +44,18 @@ export default function CbtPage() {
         return router.push("/sign-in");
       }
 
-      const { data: testsData, error: testsError } = await supabase
-        .from("tests")
-        .select("*")
-        .returns<Tables<"tests">[]>();
+      const role = user?.user_metadata?.role;
+      const admin = role === "Admin";
+      setIsAdmin(admin);
+
+      let testsQuery = supabase.from("tests").select("*");
+      if (!admin) {
+        testsQuery = testsQuery.eq("ispublic", true);
+      }
+
+      const { data: testsData, error: testsError } = await testsQuery.returns<
+        Tables<"tests">[]
+      >();
 
       if (testsError) {
         console.error(testsError);

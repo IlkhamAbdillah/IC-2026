@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/types/database.types";
 import { createTestSession, calculateScore } from "@/lib/test-services";
 import MDXContent from "@/components/cbt/MDXContent";
@@ -31,8 +31,12 @@ export default function TestPage() {
   const { slug } = useParams();
   const [test, setTest] = useState<Tables<"tests"> | null>(null);
   const [questions, setQuestions] = useState<Tables<"questions">[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [flags, setFlags] = useState<Tables<"flags">[]>([]);
+  const [deadline, setDeadline] = useState<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasAutoSubmitted = useRef(false);
   const [choices, setChoices] = useState<Tables<"choices">[]>([]);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -170,11 +174,22 @@ export default function TestPage() {
       const team = teams?.teams as unknown as Tables<"teams">;
       setTeams(team);
 
-      const { data: test } = await supabase
-        .from("tests")
-        .select("*")
-        .eq("slug", slug)
-        .single<Tables<"tests">>();
+      const userRole = sessionData.session?.user.user_metadata?.role;
+      const admin = userRole === "Admin";
+      setIsAdmin(admin);
+
+      let testQuery = supabase.from("tests").select("*").eq("slug", slug);
+      if (!admin) {
+        testQuery = testQuery.eq("ispublic", true);
+      }
+
+      const { data: test, error: testError } = await testQuery.single<Tables<"tests">>();
+
+      if (testError || !test) {
+        console.error(testError || "Test not found or private");
+        router.push("/cbt");
+        return;
+      }
 
       let session = {} as Tables<"test_sessions">;
       try {
@@ -251,18 +266,7 @@ export default function TestPage() {
         const remainingSeconds = Math.floor((actualDeadline - Date.now()) / 1000);
 
         setTimeRemaining(remainingSeconds > 0 ? remainingSeconds : 0);
-        // setTimeRemaining(Math.floor((endTime - Date.now()) / 1000));
-
-        const timer = setInterval(() => {
-          setTimeRemaining((prev) => {
-            const newTime = prev - 1;
-            if (newTime <= 0) {
-              clearInterval(timer);
-              submitTest();
-            }
-            return newTime;
-          });
-        }, 1000);
+        setDeadline(actualDeadline);
 
         const syncTimer = setInterval(async () => {
           try {
@@ -281,7 +285,6 @@ export default function TestPage() {
         }, 1800000);
 
         return () => {
-          clearInterval(timer);
           clearInterval(syncTimer);
         };
       }
@@ -330,9 +333,40 @@ export default function TestPage() {
   }, [questions]);
 
   useEffect(() => {
-    if (!timeRemaining) return;
-    if (timeRemaining <= 0) submitTest();
-  }, [timeRemaining]);
+    if (!deadline) return;
+
+    const updateRemaining = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
+      setTimeRemaining(remaining);
+
+      if (remaining === 0 && timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    updateRemaining();
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = setInterval(updateRemaining, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [deadline]);
+
+  useEffect(() => {
+    if (timeRemaining === 0 && deadline > 0 && !hasAutoSubmitted.current) {
+      hasAutoSubmitted.current = true;
+      submitTest();
+    }
+  }, [timeRemaining, deadline]);
 
   const handleFlag = async () => {
     await fetchTestSession();
@@ -640,7 +674,7 @@ export default function TestPage() {
                     index === currentQuestion
                       ? "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-md"
                       : answers[questions[index].id]
-                        ? "bg-accent/20 text-foreground border-accent/40"
+                        ? "bg-accent/75 text-foreground border-accent/40"
                         : "bg-background border-border/50 text-foreground/80"
                   } hover:bg-primary/50 hover:text-primary-foreground transition-all duration-200`}
                   onClick={() => handleQuestionChange(index)}

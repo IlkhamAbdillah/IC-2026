@@ -14,6 +14,7 @@ export default function InstructionPage() {
   const router = useRouter();
   const { slug } = useParams();
   const [testData, setTestData] = useState<Tables<"tests"> | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [compiledCode, setCompiledCode] = useState("");
@@ -41,14 +42,21 @@ export default function InstructionPage() {
           return;
         }
 
-        // Fetch tests data
-        const { data: tests, error: testsError } = await supabase
-          .from("tests")
-          .select("*")
-          .eq("slug", slug)
-          .single<Tables<"tests">>();
+        // Determine role and public/hidden test access
+        const userRole = sessionData.session?.user.user_metadata?.role;
+        const admin = userRole === "Admin";
+        setIsAdmin(admin);
 
-        if (testsError) throw new Error(testsError.message);
+        let testQuery = supabase.from("tests").select("*").eq("slug", slug);
+        if (!admin) {
+          testQuery = testQuery.eq("ispublic", true);
+        }
+
+        const { data: tests, error: testsError } = await testQuery.single<Tables<"tests">>();
+
+        if (testsError || !tests) {
+          throw new Error("Test not found or not available (private)");
+        }
 
         setTestData(tests);
 

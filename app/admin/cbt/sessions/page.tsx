@@ -92,15 +92,22 @@ export default function ForceSubmitPage() {
       return;
     }
 
-    const now = new Date();
-
     // Transform data to include test title and team name
     const transformedData = data.map((session) => {
-      const testEndTime = session.tests?.end_time
-        ? new Date(session.tests.end_time)
-        : null;
+      const now = new Date();
+      const startTime = new Date(session.start_time)
+      const durationInMinutes = session.tests?.duration || 60;
+      const durationDeadline = new Date(startTime.getTime() + durationInMinutes * 60000);
 
-      const isOverdue = testEndTime ? now > testEndTime : false;
+      const testEndTime = session.tests?.end_time 
+        ? new Date(session.tests.end_time) 
+        : durationDeadline;
+
+      const effectiveEndTime = durationDeadline < testEndTime
+        ? durationDeadline 
+        : testEndTime;
+
+      const isOverdue = now > effectiveEndTime;
 
       return {
         ...session,
