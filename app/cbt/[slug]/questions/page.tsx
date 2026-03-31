@@ -674,7 +674,7 @@ export default function TestPage() {
                     index === currentQuestion
                       ? "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-md"
                       : answers[questions[index].id]
-                        ? "bg-accent/75 text-foreground border-accent/40"
+                        ? "bg-accent/45 text-foreground border-accent/40"
                         : "bg-background border-border/50 text-foreground/80"
                   } hover:bg-primary/50 hover:text-primary-foreground transition-all duration-200`}
                   onClick={() => handleQuestionChange(index)}
