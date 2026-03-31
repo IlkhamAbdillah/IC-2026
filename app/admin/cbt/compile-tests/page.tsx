@@ -25,29 +25,25 @@ export default function DashboardPage() {
     async function fetchData() {
       setIsPageLoading(true);
       try {
-        const emails = await getAllEmails();
-        setEmails(emails);
+        const [
+          emailsList,
+          testsResult,
+          questionsResult,
+          choicesResult,
+        ] = await Promise.all([
+          getAllEmails(),
+          supabase.from("tests").select().returns<Tables<"tests">[]>(),
+          supabase.from("questions").select().returns<Tables<"questions">[]>(),
+          supabase.from("choices").select().returns<Tables<"choices">[]>(),
+        ]);
 
-        const { data: testsData } = await supabase
-          .from("tests")
-          .select()
-          .returns<Tables<"tests">[]>();
+        setEmails(emailsList);
 
-        const { data: questionsData } = await supabase
-          .from("questions")
-          .select()
-          .returns<Tables<"questions">[]>();
-
-        const { data: choicesData } = await supabase
-          .from("choices")
-          .select()
-          .returns<Tables<"choices">[]>();
-
-        if (testsData && questionsData && choicesData) {
-          setTestsData(testsData);
-          setQuestionsData(questionsData);
-          setChoicesData(choicesData);
-          console.log(testsData, questionsData, choicesData);
+        if (testsResult.data && questionsResult.data && choicesResult.data) {
+          setTestsData(testsResult.data);
+          setQuestionsData(questionsResult.data);
+          setChoicesData(choicesResult.data);
+          console.log(testsResult.data, questionsResult.data, choicesResult.data);
         } else {
           setError("Failed to load data");
         }
