@@ -156,6 +156,18 @@ export default function CbtPage() {
                 return parts && parts.length > 1 && parts[1] === `${test.id}`;
               });
 
+              const testSession = teamSessions.find(
+                (session) => session.test_id === test.id
+              );
+
+              const testSessionStatus = testSession
+                ? testSession.status === "ongoing"
+                  ? "In Progress"
+                  : testSession.status === "finished"
+                  ? "Submitted"
+                  : testSession.status
+                : "Not Started";
+
               return (
                 <div
                   key={test.id}
@@ -163,6 +175,23 @@ export default function CbtPage() {
                 >
                   <div className="p-6 border-b border-border/20">
                     <h2 className="text-xl font-semibold mb-2">{test.title}</h2>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-2 py-1 rounded-full bg-blue-600 text-white text-xs">
+                        {testSessionStatus}
+                      </span>
+                      {(() => {
+                        const isPublic = (test as any).ispublic ?? false;
+                        return (
+                          <span
+                            className={`px-2 py-1 rounded-full text-white text-xs ${
+                              isPublic ? "bg-emerald-500" : "bg-rose-500"
+                            }`}
+                          >
+                            {isPublic ? "Public" : "Private"}
+                          </span>
+                        );
+                      })()}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
