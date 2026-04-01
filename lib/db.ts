@@ -5,7 +5,7 @@ export async function getTestByTestId(testId: number): Promise<Tables<"tests">> 
   const supabase = await createClient();
   const { data: tests, error } = await supabase
     .from("tests")
-    .select()
+    .select("*")
     .eq("id", testId)
     .single<Tables<"tests">>();
 
@@ -20,7 +20,7 @@ export async function getQuestionsByTestId(testId: number): Promise<Tables<"ques
   const supabase = await createClient();
   const { data: questions, error } = await supabase
     .from("questions")
-    .select()
+    .select("*")
     .eq("testid", testId)
     .returns<Tables<"questions">[]>();
 
@@ -35,7 +35,7 @@ export async function getChoicesByQuestionId(questionId: number): Promise<Tables
   const supabase = await createClient();
   const { data: choices, error } = await supabase
     .from("choices")
-    .select()
+    .select("*")
     .eq("questionid", questionId)
     .returns<Tables<"choices">[]>();
 

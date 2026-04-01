@@ -61,10 +61,24 @@ export async function createTestSession(teamId: string, testId: number): Promise
 export async function calculateScore(testSessionId: string, teamId: string, testId: number): Promise<number> {
     const supabase = await createClient();
 
-    // get the correction table
+    // get the questions of the test session first (needed to filter correction_table)
+    const { data: questions, error: questionsError } = await supabase
+        .from("questions")
+        .select("*")
+        .eq("test_id", testId)
+        .returns<Tables<"questions">[]>();
+
+    if (!questions || questions.length === 0) {
+        return 0;
+    }
+
+    const questionIds = questions.map(q => q.id);
+
+    // get the correction table filtered by question IDs of this test only
     const { data: correctionTable, error: correctionError } = await supabase
         .from("correction_table")
         .select("*")
+        .in("question_id", questionIds)
         .returns<Tables<"correction_table">[]>();
 
     // get the answers of the test session
@@ -74,15 +88,6 @@ export async function calculateScore(testSessionId: string, teamId: string, test
         .eq("test_session_id", testSessionId)
         .returns<Tables<"answers">[]>();
 
-    // get the questions of the test session
-    const { data: questions, error: questionsError } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("test_id", testId)
-        .returns<Tables<"questions">[]>();
-
-    // get the team 
-
     if (!answers) {
         return 0;
     }
@@ -91,8 +96,7 @@ export async function calculateScore(testSessionId: string, teamId: string, test
     let score = 0;
     for (const answer of answers) {
         if (answer.choice_id === null && answer.answer_text === null) {
-            score += 0;
-            break;
+            continue;
         }
 
         const question = questions!.find(q => q.id === answer.question_id);

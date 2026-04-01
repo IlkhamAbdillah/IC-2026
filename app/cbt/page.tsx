@@ -20,21 +20,6 @@ export default function CbtPage() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    async function checkAdmin() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const role = user?.user_metadata?.role;
-        setIsAdmin(role === "Admin");
-      }
-    }
-
-    checkAdmin();
-  }, [supabase]);
-
-  useEffect(() => {
     async function fetchData() {
       const {
         data: { user },
@@ -45,47 +30,30 @@ export default function CbtPage() {
       }
 
       const role = user?.user_metadata?.role;
-      const admin = role === "Admin";
-      setIsAdmin(admin);
+      setIsAdmin(role === "Admin");
 
-      let testsQuery = supabase.from("tests").select("*");
-      if (!admin) {
-        testsQuery = testsQuery.eq("ispublic", true);
-      }
+      const [testsResult, teamsResult] = await Promise.all([
+        supabase.from("tests").select("*").returns<Tables<"tests">[]>(),
+        supabase.from("members").select("teams(*)").eq("email", user.email).single(),
+      ]);
 
-      const { data: testsData, error: testsError } = await testsQuery.returns<
-        Tables<"tests">[]
-      >();
-
-      if (testsError) {
-        console.error(testsError);
+      if (testsResult.error) {
+        console.error(testsResult.error);
         return;
       }
 
-      setTestsData(testsData);
+      setTestsData(testsResult.data);
 
-      const { data: teams } = await supabase
-        .from("members")
-        .select("teams(*)")
-        .eq("email", user.email)
-        .single();
-
-      const team = teams?.teams as unknown as Tables<"teams">;
+      const team = teamsResult.data?.teams as unknown as Tables<"teams">;
       setTeams(team);
 
-      const { data: teamSessions } = await supabase
-        .from("test_sessions")
-        .select("*")
-        .eq("team_id", team.id);
+      const [sessionsResult, finishesResult] = await Promise.all([
+        supabase.from("test_sessions").select("*").eq("team_id", team.id),
+        supabase.from("finishes").select("*").filter("session_id", "like", `${team.id}-%`),
+      ]);
 
-      setTeamSessions(teamSessions as Tables<"test_sessions">[]);
-
-      const { data: finishedTests } = await supabase
-        .from("finishes")
-        .select("*")
-        .filter("session_id", "ilike", `${team.id}-%`);
-
-      setFinishedTests(finishedTests as Tables<"finishes">[]);
+      setTeamSessions(sessionsResult.data as Tables<"test_sessions">[]);
+      setFinishedTests(finishesResult.data as Tables<"finishes">[]);
     }
 
     fetchData();
@@ -156,18 +124,6 @@ export default function CbtPage() {
                 return parts && parts.length > 1 && parts[1] === `${test.id}`;
               });
 
-              const testSession = teamSessions.find(
-                (session) => session.test_id === test.id
-              );
-
-              const testSessionStatus = testSession
-                ? testSession.status === "ongoing"
-                  ? "In Progress"
-                  : testSession.status === "finished"
-                  ? "Submitted"
-                  : testSession.status
-                : "Not Started";
-
               return (
                 <div
                   key={test.id}
@@ -175,23 +131,6 @@ export default function CbtPage() {
                 >
                   <div className="p-6 border-b border-border/20">
                     <h2 className="text-xl font-semibold mb-2">{test.title}</h2>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-2 py-1 rounded-full bg-blue-600 text-white text-xs">
-                        {testSessionStatus}
-                      </span>
-                      {(() => {
-                        const isPublic = (test as any).ispublic ?? false;
-                        return (
-                          <span
-                            className={`px-2 py-1 rounded-full text-white text-xs ${
-                              isPublic ? "bg-emerald-500" : "bg-rose-500"
-                            }`}
-                          >
-                            {isPublic ? "Public" : "Private"}
-                          </span>
-                        );
-                      })()}
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
