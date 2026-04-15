@@ -1,6 +1,14 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/types/database.types";
+import { unstable_cache } from "next/cache";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+
+// Stateless client for cached operations that cannot access cookies
+const getStatelessSupabase = () => createSupabaseClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE!
+);
 
 export async function checkTestSession(teamId: number, testId: number): Promise<Tables<"test_sessions"> | null> {
     const supabase = await createClient();
@@ -130,4 +138,80 @@ export async function calculateScore(testSessionId: string, teamId: string, test
             }
         );
     return score;
+}
+
+// CACHED SERVER ACTIONS
+// These functions use unstable_cache to deduplicate standard repetitive backend reads.
+
+const _getCachedTestBySlug = unstable_cache(
+  async (slug: string) => {
+    const supabase = getStatelessSupabase();
+    const { data } = await supabase
+      .from("tests")
+      .select("*")
+      .eq("slug", slug)
+      .single<Tables<"tests">>();
+    return data;
+  },
+  ["cbt-test-by-slug"],
+  { revalidate: 60, tags: ["tests"] }
+);
+
+export async function getCachedTestBySlug(slug: string) {
+  return _getCachedTestBySlug(slug);
+}
+
+const _getCachedTestById = unstable_cache(
+  async (id: number) => {
+    const supabase = getStatelessSupabase();
+    const { data } = await supabase
+      .from("tests")
+      .select("*")
+      .eq("id", id)
+      .single<Tables<"tests">>();
+    return data;
+  },
+  ["cbt-test-by-id"],
+  { revalidate: 60, tags: ["tests"] }
+);
+
+export async function getCachedTestById(id: number) {
+  return _getCachedTestById(id);
+}
+
+const _getCachedQuestions = unstable_cache(
+  async (testId: number) => {
+    const supabase = getStatelessSupabase();
+    const { data } = await supabase
+      .from("questions")
+      .select("*")
+      .eq("test_id", testId)
+      .order("id", { ascending: true })
+      .returns<Tables<"questions">[]>();
+    return data || [];
+  },
+  ["cbt-questions-by-test-id"],
+  { revalidate: 60, tags: ["questions"] }
+);
+
+export async function getCachedQuestions(testId: number) {
+  return _getCachedQuestions(testId);
+}
+
+const _getCachedChoices = unstable_cache(
+  async (questionId: number) => {
+    const supabase = getStatelessSupabase();
+    const { data } = await supabase
+      .from("choices")
+      .select("*")
+      .eq("question_id", questionId)
+      .returns<Tables<"choices">[]>();
+    return data || [];
+  },
+  ["cbt-choices-by-question-id"],
+  { revalidate: 60, tags: ["choices"] }
+);
+
+export async function getCachedChoices(questionId: number) {
+  return _getCachedChoices(questionId);
 }

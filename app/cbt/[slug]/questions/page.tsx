@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Tables } from "@/types/database.types";
-import { createTestSession, calculateScore } from "@/lib/test-services";
+import { createTestSession, calculateScore, getCachedTestBySlug, getCachedTestById, getCachedQuestions, getCachedChoices } from "@/lib/test-services";
 import MDXContent from "@/components/cbt/MDXContent";
 import QuestionSkeleton from "@/components/cbt/QuestionSkeleton";
 import { useTheme } from "next-themes";
@@ -157,6 +157,9 @@ export default function TestPage() {
 
   useEffect(() => {
     async function initializeTest() {
+      const jitterDelay = Math.floor(Math.random() * 5000);
+      await new Promise((resolve) => setTimeout(resolve, jitterDelay));
+
       const { data: sessionData, error: authError } =
         await supabase.auth.getSession();
 
@@ -178,12 +181,20 @@ export default function TestPage() {
       const admin = userRole === "Admin";
       setIsAdmin(admin);
 
-      let testQuery = supabase.from("tests").select("*").eq("slug", slug);
-      if (!admin) {
-        testQuery = testQuery.eq("ispublic", true);
-      }
-
-      const { data: test, error: testError } = await testQuery.single<Tables<"tests">>();
+      let test: Tables<"tests"> | null = null;
+      let testError = null;
+      try {
+        const cachedTest = await getCachedTestBySlug(slug as string);
+        if (cachedTest) {
+          if (!admin && !(cachedTest as any).ispublic) {
+            testError = new Error("Test is not public");
+          } else {
+            test = cachedTest;
+          }
+        } else {
+          testError = new Error("Not found");
+        }
+      } catch(e) { testError = e; }
 
       if (testError || !test) {
         console.error(testError || "Test not found or private");
@@ -216,18 +227,8 @@ export default function TestPage() {
       setTestSession(session);
 
       // 2. Fetch test data and questions
-      const { data: testData } = await supabase
-        .from("tests")
-        .select("*")
-        .eq("id", session.test_id)
-        .single<Tables<"tests">>();
-
-      const { data: questionsData } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("test_id", session.test_id)
-        .order("id", { ascending: true })
-        .returns<Tables<"questions">[]>();
+      const testData = await getCachedTestById(session.test_id!);
+      const questionsData = await getCachedQuestions(session.test_id!);
 
       if (testData && questionsData) {
         setTest(testData);
@@ -325,6 +326,16 @@ export default function TestPage() {
     fetchTestSession();
   }, [test, teams, router]);
 
+  // Validate session every 5 minutes instead of every question click
+  useEffect(() => {
+    if (!testSession) return;
+    const sessionCheckInterval = setInterval(() => {
+      validateSession();
+    }, 5 * 60 * 1000); // 5 menit
+
+    return () => clearInterval(sessionCheckInterval);
+  }, [testSession]);
+
   // Handle question change when questions state updates
   useEffect(() => {
     if (questions.length > 0) {
@@ -369,7 +380,7 @@ export default function TestPage() {
   }, [timeRemaining, deadline]);
 
   const handleFlag = async () => {
-    await fetchTestSession();
+    // fetchTestSession dihapus — data sesi sudah tersimpan di state
 
     const { data } = await supabase
       .from("flags")
@@ -450,7 +461,7 @@ export default function TestPage() {
     questionId: number,
     choices: Tables<"choices">
   ) => {
-    await fetchTestSession();
+    // fetchTestSession dihapus — data sesi sudah tersimpan di state
     setAnswers((prev) => ({
       ...prev,
       [questionId]: choices.id,
@@ -514,31 +525,14 @@ export default function TestPage() {
   };
 
   const handleQuestionChange = async (index: number) => {
-    await validateSession();
-    await fetchTestSession();
+    // validateSession dipindahkan ke timer 5 menit (bukan per-klik)
+    // fetchTestSession dihapus — data sesi sudah tersimpan di state
     setShortAnswerSaved(false);
     setCurrentQuestion(index);
 
-    const { data: teamAnswers } = await supabase
-      .from("answers")
-      .select("*")
-      .eq("team_id", teams?.id)
-      .eq("test_session_id", testSession?.id)
-      .returns<Tables<"answers">[]>();
-
-    if (teamAnswers) {
-      const teamAnswersMap = teamAnswers.reduce(
-        (acc, curr) => {
-          acc[curr.question_id] = curr.choice_id ?? curr.answer_text;
-          return acc;
-        },
-        {} as Record<string, any>
-      );
-
-      if (teamAnswersMap[questions[index].id]) {
-        setShortAnswerSaved(true);
-      }
-      setAnswers(teamAnswersMap);
+    // Cek apakah jawaban sudah ada di local state (optimistic)
+    if (answers[questions[index].id]) {
+      setShortAnswerSaved(true);
     }
 
     setLoading(true);
@@ -548,11 +542,7 @@ export default function TestPage() {
       questionType === "multiple-choices" ||
       questionType === "multiple-answers"
     ) {
-      const { data: choicesData } = await supabase
-        .from("choices")
-        .select("*")
-        .eq("question_id", questions[index].id)
-        .returns<Tables<"choices">[]>();
+      const choicesData = await getCachedChoices(questions[index].id);
 
       // Create deterministic shuffle using seed from test session ID
       const seedString = testSession?.id || "";
@@ -562,7 +552,7 @@ export default function TestPage() {
         .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
       // Fisher-Yates shuffle with deterministic random using the seed
-      const shuffledChoices = [...choicesData!];
+      const shuffledChoices = [...choicesData];
       const choiceRandomGenerator = () => {
         // Simple linear congruential generator with our seed
         choiceSeed = (choiceSeed * 9301 + 49297) % 233280;
@@ -581,7 +571,7 @@ export default function TestPage() {
       setChoices(shuffledChoices);
 
       let choicesResponses = [];
-      for (const choice of shuffledChoices!) {
+      for (const choice of shuffledChoices) {
         choicesResponses.push(choice.choice_mdx!);
       }
 
