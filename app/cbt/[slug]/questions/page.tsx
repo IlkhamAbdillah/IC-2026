@@ -326,12 +326,12 @@ export default function TestPage() {
     fetchTestSession();
   }, [test, teams, router]);
 
-  // Validate session every 5 minutes instead of every question click
+  // Validate session every 1 minute instead of every question click
   useEffect(() => {
     if (!testSession) return;
     const sessionCheckInterval = setInterval(() => {
       validateSession();
-    }, 5 * 60 * 1000); // 5 menit
+    }, 1 * 60 * 1000); // 1 menit
 
     return () => clearInterval(sessionCheckInterval);
   }, [testSession]);
