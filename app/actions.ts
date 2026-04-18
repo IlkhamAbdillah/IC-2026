@@ -155,74 +155,9 @@ async function manageUserSession(supabase: SupabaseClient<any, "public", any>, a
 // Function to check if the current session is still valid
 // Call this on application startup or page loads
 export const checkSessionValidity = async (test_session_id?: string) => {
-  // 🔥 HOTFIX URGEN: Selalu kembalikan TRUE agar client lama yang belum refresh halamannya
-  // (dan interval 1-menitnya masih menyala) tidak tertendang menuju session-error.
+  // 🔥 HOTFIX URGEN: Selalu kembalikan TRUE.
+  // Seluruh logika lama dihapus sementara untuk menghindari error Type-Check & Unreachable Code saat Build
   return true;
-
-  try {
-    const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) return false;
-    
-    const accessToken = session.access_token;
-    
-    const { data: sessionRow } = await supabase
-      .from('user_sessions')
-      .select('*')
-      .eq('session_token', accessToken)
-      .eq('is_active', true)
-      .single();
-    
-    if (!sessionRow) {
-      // This session has been revoked
-      // Log to unfairness table before signing out
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // Fetch the last known session data
-          const { data: lastSessions } = await supabase
-            .from('user_sessions')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(2);
-
-          console.log("Last sessions:", lastSessions);
-
-          if(lastSessions && lastSessions.length === 0) {
-            console.error("No previous session data found");
-            await supabase.auth.signOut();
-            return true;
-          }
-
-          // Create detailed information for logging
-          const sessionDetails = lastSessions && lastSessions.length > 0 ? 
-            lastSessions.map((session, index) => 
-              `Session ${index + 1}: IP=${session.ip}, Device=${session.device_info}, Created=${session.created_at}`
-            ).join(' | ') :
-            'No previous session data found';
-          
-          await supabase.from('unfairness').insert({
-            user_id: user.id,
-            category: 'session_revoked',
-            detail: `User session was invalidated or not found. ${sessionDetails}`,
-            test_session_id
-          });
-        }
-      } catch (logError) {
-        console.error("Error logging to unfairness table:", logError);
-      }
-      
-      await supabase.auth.signOut();
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Error checking session validity:", error);
-    return false;
-  }
 };
 // Verify function to check the password against stored hash
 function verifyPassword(plainText: string, salt: string, hashedPassword: string): boolean {
