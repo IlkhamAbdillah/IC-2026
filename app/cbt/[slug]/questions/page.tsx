@@ -55,16 +55,8 @@ export default function TestPage() {
   const supabase = createClient();
 
   const validateSession = async () => {
-    try {
-      const isValid = await checkSessionValidity(testSession!.id);
-
-      if (!isValid) {
-        router.push("/session-error");
-        return;
-      }
-    } catch (error) {
-      console.error("Error validating session:", error);
-    }
+    // Fitur Check Validity ditiadakan sementara agar peserta tidak tertendang tiba-tiba (Unfairness trap)
+    return;
   };
 
   useEffect(() => {

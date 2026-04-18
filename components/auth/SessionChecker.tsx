@@ -19,8 +19,9 @@ export default function SessionChecker({
         const isValid = await checkSessionValidity();
 
         if (!isValid) {
-          router.push("/session-error");
-          return;
+          console.warn('Session is technically invalid, but bypassing kickout for now');
+          // router.push("/session-error");
+          // return;
         }
 
         setIsChecking(false);

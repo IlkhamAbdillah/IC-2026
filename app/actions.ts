@@ -155,6 +155,10 @@ async function manageUserSession(supabase: SupabaseClient<any, "public", any>, a
 // Function to check if the current session is still valid
 // Call this on application startup or page loads
 export const checkSessionValidity = async (test_session_id?: string) => {
+  // 🔥 HOTFIX URGEN: Selalu kembalikan TRUE agar client lama yang belum refresh halamannya
+  // (dan interval 1-menitnya masih menyala) tidak tertendang menuju session-error.
+  return true;
+
   try {
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
