@@ -218,6 +218,25 @@ export default function TestPage() {
       }
       setTestSession(session);
 
+      // 1.5. Fetch existing answers for this session (restore on refresh)
+      const { data: existingAnswers } = await supabase
+        .from("answers")
+        .select("*")
+        .eq("test_session_id", session.id);
+
+      if (existingAnswers && existingAnswers.length > 0) {
+        const restoredAnswers: Record<string, any> = {};
+        for (const ans of existingAnswers) {
+          // For multiple-choices, use choice_id; for short-answer, use answer_text
+          if (ans.choice_id) {
+            restoredAnswers[ans.question_id] = ans.choice_id;
+          } else if (ans.answer_text) {
+            restoredAnswers[ans.question_id] = ans.answer_text;
+          }
+        }
+        setAnswers(restoredAnswers);
+      }
+
       // 2. Fetch test data and questions
       const testData = await getCachedTestById(session.test_id!);
       const questionsData = await getCachedQuestions(session.test_id!);
