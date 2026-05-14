@@ -770,6 +770,24 @@ export default function TestPage() {
                           [questions[currentQuestion].id]: value,
                         }));
                       }}
+                      onBlur={(e) => {
+                        const value = e.target.value;
+                        if (!shortAnswerSaved) {
+                          if (value.trim() === "") {
+                            handleDeleteAnswer(questions[currentQuestion].id);
+                          } else if (
+                            validateInput(
+                              value,
+                              questions[currentQuestion].validation_pattern || ".*"
+                            )
+                          ) {
+                            handleShortAnswer(
+                              questions[currentQuestion].id,
+                              value
+                            );
+                          }
+                        }
+                      }}
                       className={`w-full p-3 bg-custom border ${
                         shortAnswerValidationError
                           ? "border-red-500 focus:ring-red-500"
