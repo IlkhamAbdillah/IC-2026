@@ -35,14 +35,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     formData.append("password", password);
 
     try {
-      const result = await signInAction(formData);
-
-      if (result && "error" in result) {
-        setError(result.error);
-      } else if (result && "success" in result) {
-        // Use full page navigation to avoid RSC payload caching on refresh
-        window.location.href = "/cbt";
-      }
+      await signInAction(formData);
     } catch (error) {
       console.error("Sign-in error:", error);
       setError("Sign-in failed. Please try again.");

@@ -112,9 +112,7 @@ export const signInAction = async (formData: FormData) => {
     await manageUserSession(supabase, authData);
   }
 
-  // Return success instead of calling redirect() to avoid RSC payload caching.
-  // The client will handle the redirect with window.location.href.
-  return { success: true };
+  return redirect("/cbt");
 };
 
 // Helper function to manage user sessions
