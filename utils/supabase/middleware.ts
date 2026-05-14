@@ -64,6 +64,12 @@ export const updateSession = async (request: NextRequest) => {
       }
     }
 
+    // Prevent browser from caching RSC payload responses.
+    // Without this, a hard refresh after client-side navigation can serve
+    // the cached RSC text instead of proper HTML.
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    response.headers.set("Vary", "RSC, Next-Router-State-Tree, Next-Router-Prefetch");
+
     return response;
   } catch (e) {
     // If you are here, a Supabase client could not be created!
