@@ -208,12 +208,11 @@ export default function TestPage() {
           .eq("id", `${team?.id}-${test?.id}-${session.id}`)
           .single<Tables<"scores">>();
 
-        if (scores) {
-          router.push("/cbt");
-        } else {
+        if (!scores) {
           await calculateScore(session.id, team!.id, test!.id);
-          router.push("/cbt");
         }
+        // Use full-page navigation to avoid RSC payload caching on refresh
+        window.location.href = "/cbt";
         return;
       }
       setTestSession(session);
@@ -321,13 +320,11 @@ export default function TestPage() {
         .eq("id", `${teams?.id}-${test?.id}-${session.id}`)
         .single<Tables<"scores">>();
 
-      if (scores) {
-        router.push("/cbt");
-      } else {
+      if (!scores) {
         await calculateScore(session.id, teams!.id, test!.id);
-        router.push("/cbt");
       }
-      router.push("/cbt");
+      // Use full-page navigation to avoid RSC payload caching on refresh
+      window.location.href = "/cbt";
       return;
     }
     setTestSession(session);
@@ -631,7 +628,8 @@ export default function TestPage() {
 
     await calculateScore(testSession.id, teams!.id, test!.id);
 
-    router.push(`/cbt`);
+    // Use full-page navigation to avoid RSC payload caching on refresh
+    window.location.href = "/cbt";
   };
 
   // Format remaining time
