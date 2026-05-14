@@ -22,6 +22,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
     if (!email || !password) {
       setError("Email and password are required");
@@ -34,10 +35,17 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     formData.append("password", password);
 
     try {
-      await signInAction(formData);
+      const result = await signInAction(formData);
+
+      if (result && "error" in result) {
+        setError(result.error);
+      } else if (result && "success" in result) {
+        // Use full page navigation to avoid RSC payload caching on refresh
+        window.location.href = "/cbt";
+      }
     } catch (error) {
       console.error("Sign-in error:", error);
-      // setError("Sign-in failed. Please check your credentials.");
+      setError("Sign-in failed. Please try again.");
     }
   };
 

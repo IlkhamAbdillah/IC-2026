@@ -56,14 +56,14 @@ export const signInAction = async (formData: FormData) => {
 
   if (emailError) {
     console.error(emailError.message);
-    return encodedRedirect("error", "/sign-in", "Email not found");
+    return { error: "Email not found" };
   }
   
   const isPasswordValid = verifyPassword(password, memberData.salt!, memberData.hashed_password!);
   
   if (!isPasswordValid) {
     console.error("Invalid password for email:", email);
-    return encodedRedirect("error", "/sign-in", "Invalid password");
+    return { error: "Invalid password" };
   }
 
   // After verification against our database, handle Supabase auth
@@ -83,7 +83,7 @@ export const signInAction = async (formData: FormData) => {
 
       if (signUpError) {
         console.error(signUpError.code + " " + signUpError.message);
-        return encodedRedirect("error", "/sign-in", "Error creating authentication: " + signUpError.message);
+        return { error: "Error creating authentication: " + signUpError.message };
       }
       
       // Now sign in the newly created user
@@ -93,7 +93,7 @@ export const signInAction = async (formData: FormData) => {
       });
 
       if (signInError) {
-        return encodedRedirect("error", "/sign-in", signInError.message);
+        return { error: signInError.message };
       }
       
       // Handle session management for the new user
@@ -102,17 +102,19 @@ export const signInAction = async (formData: FormData) => {
       }
     } catch (error) {
       console.error(error);
-      return encodedRedirect("error", "/sign-in", "Authentication error occurred");
+      return { error: "Authentication error occurred" };
     }
   } else if (authError) {
     // Some other error occurred with Supabase auth
-    return encodedRedirect("error", "/sign-in", authError.message);
+    return { error: authError.message };
   } else if (authData && authData.user) {
     // User logged in successfully - manage their session
     await manageUserSession(supabase, authData);
   }
 
-  return redirect("/cbt");
+  // Return success instead of calling redirect() to avoid RSC payload caching.
+  // The client will handle the redirect with window.location.href.
+  return { success: true };
 };
 
 // Helper function to manage user sessions
