@@ -35,7 +35,10 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     formData.append("password", password);
 
     try {
-      await signInAction(formData);
+      const result = await signInAction(formData);
+      if (result && result.error) {
+        setError(result.error);
+      }
     } catch (error) {
       console.error("Sign-in error:", error);
       setError("Sign-in failed. Please try again.");

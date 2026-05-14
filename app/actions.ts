@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { Tables } from "@/types/database.types";
 import { SupabaseClient, UserIdentity, UserResponse, WeakPassword } from "@supabase/supabase-js";
 import crypto from 'crypto';
+import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData) => {
   const supabase = await createClient();
@@ -112,6 +113,7 @@ export const signInAction = async (formData: FormData) => {
     await manageUserSession(supabase, authData);
   }
 
+  revalidatePath("/", "layout");
   return redirect("/cbt");
 };
 
@@ -290,5 +292,6 @@ export const signOutAction = async () => {
     console.error("Error during sign out:", error);
   }
   
+  revalidatePath("/", "layout");
   return redirect("/sign-in");
 };
