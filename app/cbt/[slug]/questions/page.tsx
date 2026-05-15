@@ -51,6 +51,7 @@ export default function TestPage() {
   const [shortAnswerValidationError, setShortAnswerValidationError] =
     useState("");
   const [shortAnswerSaved, setShortAnswerSaved] = useState(false);
+  const [draftAnswer, setDraftAnswer] = useState<string>("");
 
   const supabase = createClient();
 
@@ -535,12 +536,16 @@ export default function TestPage() {
   const handleQuestionChange = async (index: number) => {
     // validateSession dipindahkan ke timer 5 menit (bukan per-klik)
     // fetchTestSession dihapus — data sesi sudah tersimpan di state
-    setShortAnswerSaved(false);
     setCurrentQuestion(index);
 
     // Cek apakah jawaban sudah ada di local state (optimistic)
-    if (answers[questions[index].id]) {
+    const savedAnswer = answers[questions[index].id];
+    if (savedAnswer) {
       setShortAnswerSaved(true);
+      setDraftAnswer(savedAnswer);
+    } else {
+      setShortAnswerSaved(false);
+      setDraftAnswer("");
     }
 
     setLoading(true);
@@ -751,9 +756,10 @@ export default function TestPage() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={answers[questions[currentQuestion].id] || ""}
+                      value={draftAnswer}
                       onChange={(e) => {
                         const value = e.target.value;
+                        setDraftAnswer(value);
                         if (value === answers[questions[currentQuestion].id]) {
                           setShortAnswerSaved(true);
                         } else {
@@ -764,29 +770,6 @@ export default function TestPage() {
                           value,
                           questions[currentQuestion].validation_pattern || ".*" // Fallback to any input if no pattern specified
                         );
-                        // Store temporarily in state without saving to database
-                        setAnswers((prev) => ({
-                          ...prev,
-                          [questions[currentQuestion].id]: value,
-                        }));
-                      }}
-                      onBlur={(e) => {
-                        const value = e.target.value;
-                        if (!shortAnswerSaved) {
-                          if (value.trim() === "") {
-                            handleDeleteAnswer(questions[currentQuestion].id);
-                          } else if (
-                            validateInput(
-                              value,
-                              questions[currentQuestion].validation_pattern || ".*"
-                            )
-                          ) {
-                            handleShortAnswer(
-                              questions[currentQuestion].id,
-                              value
-                            );
-                          }
-                        }
                       }}
                       className={`w-full p-3 bg-custom border ${
                         shortAnswerValidationError
@@ -797,8 +780,7 @@ export default function TestPage() {
                     />
                     <button
                       onClick={() => {
-                        const value =
-                          answers[questions[currentQuestion].id] || "";
+                        const value = draftAnswer;
                         if (
                           validateInput(
                             value,
